@@ -10,7 +10,9 @@
   </head>
   <body>
     <script src={% static 'polling.js' %}></script>
-    <button onclick="updateimage('{{ username }}')">aaaaaa</button>
+    <script> window.onload = function() { startPolling('{{ username }}') } </script>
+
+    <h4 id="tracklabel"></h4>
 
     {{ username }}
     <img id="vis" src= {% static 'start.jpg' %}/>
