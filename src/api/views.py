@@ -1,6 +1,6 @@
 from .albumvis import Visualizer
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 
 def index(request):
@@ -10,15 +10,22 @@ def index(request):
 
 
 def playing(request, username):
-    track = Visualizer(username).currently_playing_track()
-    track_obj = {
-        'error': 'no track currently playing'} if track is None else track
-    return JsonResponse(track_obj)
+    vis = Visualizer(username)
+    track = vis.currently_playing_track()
+    if track is None:
+        return JsonResponse({
+            'error': 'no track currently playing'})
+    img_path = vis.get_album_path(track)
+    response = {'path': img_path}
+    return JsonResponse(response)
 
 
 def playingnext(request, username):
     vis = Visualizer(username)
     track = vis.wait_for_next_track()
-    track_obj = {
-        'error': 'no track currently playing'} if track is None else track
-    return JsonResponse(track_obj)
+    if track is None:
+        return JsonResponse({
+            'error': 'no track currently playing'})
+    img_path = vis.get_album_path(track)
+    response = {'path': img_path}
+    return JsonResponse(response)

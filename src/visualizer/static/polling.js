@@ -1,10 +1,14 @@
-function updateimage(username) {
+function startPolling(username) {
   $.get("/api/playing/" + username, function(data, status) {
-    console.log("Data: " + data + "\nStatus: " + status);
+    document.getElementById("vis").src = data.path;
+    poll(username);
   });
-  document.getElementById("vis").src = "/static/uhoh.jpg";
 }
 
-function reqloop() {
-  return "it works";
+function poll(username) {
+  $.get("/api/playingnext/" + username, function(data, status) {
+    document.getElementById("vis").src = data.path;
+    poll(username);
+  });
 }
+window.onload = startPolling;

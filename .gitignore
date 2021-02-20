@@ -9,3 +9,4 @@ run.sh
 venv
 __pycache__
 db.sqlite3
+src/media/*/*.jpg

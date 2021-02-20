@@ -2,10 +2,11 @@ from django.db import models
 
 
 class Album(models.Model):
-    uri = models.CharField(max_length=100)
+    uri = models.CharField(max_length=100, unique=True)
     artist_name = models.CharField(max_length=100)
     album_name = models.CharField(max_length=100)
     raw_image = models.ImageField(upload_to='raw')
+    url = models.CharField(max_length=100)
 
 
 class Render(models.Model):
