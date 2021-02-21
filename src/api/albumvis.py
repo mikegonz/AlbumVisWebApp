@@ -35,13 +35,16 @@ class Visualizer:
 
     def wait_for_next_track(self):
         track = self.sp.current_user_playing_track()
-        while(track):
+        while(True):
             sleep(3)
             newtrack = self.sp.current_user_playing_track()
-            if track['item'***REMOVED***['id'***REMOVED*** != newtrack['item'***REMOVED***['id'***REMOVED***:
-                return newtrack
-        if track is None:
-            return None
+            if track is None:
+                if newtrack is not None:
+                    return newtrack
+            ***REMOVED***
+                if newtrack is not None:
+                    if track['item'***REMOVED***['id'***REMOVED*** != newtrack['item'***REMOVED***['id'***REMOVED***:
+                        return newtrack
 
     def get_album_path(self, track):
         raw_url = settings.MEDIA_URL + "raw/" + \
