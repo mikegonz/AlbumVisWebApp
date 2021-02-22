@@ -8,13 +8,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>AlbumVis - Spotify Album Visualizer</title>
   </head>
-  <body style="background-color: black">
+  <body id="body" style="background-color: black; margin: 0;">
     <script src={% static 'polling.js' %}></script>
     <script> window.onload = function() { startPolling('{{ username }}') } </script>
+    <button id="goFS">Go fullscreen</button>
+<script>
+  var goFS = document.getElementById("goFS");
+  goFS.addEventListener("click", function() {
+      document.body.requestFullscreen();
+      goFS.hidden = true;
+  }, false);
+</script>
 
-    <h4 id="tracklabel"></h4>
-
-***REMOVED***{ username }}
     <img id="vis" src= {% static 'start.jpg' %}/>
   </body>
 </html>

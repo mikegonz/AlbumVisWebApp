@@ -15,7 +15,7 @@ def playing(request, username):
     if track is None:
         return JsonResponse({
             'error': 'no track currently playing'})
-    img_path = vis.get_album_path(track)
+    img_path = vis.get_render_path(track, "solid")
     response = {'path': img_path}
     return JsonResponse(response)
 
@@ -26,6 +26,6 @@ def playingnext(request, username):
     if track is None:
         return JsonResponse({
             'error': 'no track currently playing'})
-    img_path = vis.get_album_path(track)
+    img_path = vis.get_render_path(track, "solid")
     response = {'path': img_path}
     return JsonResponse(response)
