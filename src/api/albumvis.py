@@ -102,10 +102,8 @@ def render_image_solid(im):
     return fullim
 
 class Visualizer:
-    def __init__(self, username):
-        SCOPE = 'user-read-currently-playing'
-        self.sp = Spotify(
-            auth_manager=SpotifyOAuth(scope=SCOPE, username=username))
+    def __init__(self, username, spotify):
+        self.sp = spotify
 
     def currently_playing_track(self):
         track = self.sp.current_user_playing_track()
@@ -123,7 +121,7 @@ class Visualizer:
                     return newtrack
             ***REMOVED***
                 if newtrack is not None:
-                    if track['item'***REMOVED***['id'***REMOVED*** != newtrack['item'***REMOVED***['id'***REMOVED***:
+                    if track['item'***REMOVED***['id'***REMOVED*** != newtrack['item'***REMOVED***['id'***REMOVED***: #TODO: (new)track['item'***REMOVED*** itself can be None!!!!
                         return newtrack
 
     def get_raw_album(self, track):

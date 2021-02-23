@@ -11,3 +11,4 @@ __pycache__
 db.sqlite3
 src/media/*/*.png
 src/media/*/*.jpg
+src/.spotify_caches/*.cache
