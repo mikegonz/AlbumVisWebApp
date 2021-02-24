@@ -121,7 +121,7 @@ class Visualizer:
                     return newtrack
             ***REMOVED***
                 if newtrack is not None:
-                    if track['item'***REMOVED***['id'***REMOVED*** != newtrack['item'***REMOVED***['id'***REMOVED***: #TODO: (new)track['item'***REMOVED*** itself can be None!!!!
+                    if track['item'***REMOVED*** != newtrack['item'***REMOVED***: #TODO: (new)track['item'***REMOVED*** itself can be None!!!!
                         return newtrack
 
     def get_raw_album(self, track):
