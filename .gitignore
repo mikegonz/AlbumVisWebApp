@@ -13,3 +13,4 @@ src/media/*/*.png
 src/media/*/*.jpg
 src/.spotify_caches/*.cache
 src/static/admin/*
+src/gac.json

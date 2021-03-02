@@ -8,12 +8,6 @@ from visualizer.views import index as visindex
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy import Spotify
 
-caches_folder = '.spotify_caches/'
-
-
-def session_cache_path(session):
-    return caches_folder + session.get('uuid') + ".cache"
-
 
 def index(request):
     track_name = 'no username provided'
@@ -22,9 +16,7 @@ def index(request):
 
 
 def get_track(request, username, isFirst):
-    auth_manager = SpotifyOAuth(
-        scope='user-read-currently-playing', cache_path=session_cache_path(request.session))
-    spotify = Spotify(auth_manager=auth_manager)
+    spotify = Spotify(request.session.get('token')['access_token'***REMOVED***)
     vis = Visualizer(username, spotify)
     track = vis.currently_playing_track() if isFirst else vis.wait_for_next_track()
     if track is None or track['item'***REMOVED*** is None:

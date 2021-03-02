@@ -1,21 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, is_token_expired
 from spotipy import Spotify
 import uuid
-
-caches_folder = '.spotify_caches/'
-
-
-def session_cache_path(session):
-    return caches_folder + session.get('uuid') + ".cache"
-
-
-def indasdfex(request):
-    # if request.session.get('username'):
-    #     return redirect(visview, request.session.get('username'))
-    return redirect(index)
-    # return render(request, "visualizer/index.html")
 
 
 def index(request):
@@ -24,26 +11,24 @@ def index(request):
 
     auth_manager = SpotifyOAuth(
         scope='user-read-currently-playing',
-        cache_path=session_cache_path(request.session),
         show_dialog=True)
     if request.method == 'GET':
         if request.GET.get("code"):
             # Step 3. Being redirected from Spotify auth page
-            request.session['token_info'***REMOVED*** = auth_manager.get_access_token(
-                request.GET.get("code"))
+            request.session['token'***REMOVED*** = auth_manager.get_access_token(
+                code=request.GET.get("code"), check_cache=False)
             return redirect(index)
 
-    if not auth_manager.get_cached_token():
+    if not request.session.get('token'):
         auth_url = auth_manager.get_authorize_url()
         return HttpResponse(f'<h2><a href="{auth_url}">Sign in</a></h2>')
 
-    if auth_manager.is_token_expired(request.session.get('token_info')):
-        request.session['token_info'***REMOVED*** = auth_manager.refresh_access_token(
-            request.session.get('token_info'))
+    if is_token_expired(request.session.get('token')):
+        request.session['token'***REMOVED*** = auth_manager.refresh_access_token(
+            request.session.get('token')['refresh_token'***REMOVED***)
 
-    spotify = Spotify(auth_manager=auth_manager)
+    spotify = Spotify(request.session.get('token')['access_token'***REMOVED***)
     request.session['username'***REMOVED*** = spotify.me()['id'***REMOVED***
-    request.session['token'***REMOVED*** = auth_manager.get_cached_token()
     return redirect(visview, request.session.get('username'))
 
 
@@ -52,8 +37,8 @@ def visview(request, username):
         return redirect(index)
     if username != request.session.get('username'):
         return redirect(visview, request.session['username'***REMOVED***)
-    auth_manager = SpotifyOAuth(cache_path=session_cache_path(request.session))
-    if (not auth_manager.get_cached_token()) or auth_manager.is_token_expired(auth_manager.get_cached_token()):
+    auth_manager = SpotifyOAuth(scope='user-read-currently-playing')
+    if (not request.session.get('token')) or auth_manager.is_token_expired(request.session.get('token')):
         return redirect(index)
     context = {'username': username, 'sessionid': request.session.get('uuid')}
     return render(request, "visualizer/vis.html", context)
