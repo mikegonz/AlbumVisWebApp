@@ -23,7 +23,7 @@ def get_track(request, username, isFirst):
         return JsonResponse({
             'error': 'no track currently playing',
             'path': settings.STATIC_URL + "uhoh.jpg"})
-    img_path = vis.get_render_path(track, "mirror-side")
+    img_path = vis.get_render_url(track, "mirror-side")
     response = {'path': img_path}
     return JsonResponse(response)
 

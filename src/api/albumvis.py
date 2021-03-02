@@ -126,40 +126,40 @@ class Visualizer:
                     if track['item'] != newtrack['item']: #TODO: (new)track['item'] itself can be None!!!!
                         return newtrack
 
-    def get_raw_album(self, track):
+    def get_render_url(self, track, render_mode):
         uri = track['item']['album']['id']
-        if len(Album.objects.filter(uri=uri)) != 0:
-            return Album.objects.get(uri=uri)
+        album = None
 
+        if len(Album.objects.filter(uri=uri)) != 0:
+            album = Album.objects.get(uri=uri)
+        else:
+            album = self.create_album(track)
+
+        if len(album.render_set.filter(render_mode=render_mode)) != 0:
+            render = album.render_set.get(render_mode=render_mode)
+            return render.url
+        else:
+            render = self.create_render(album, render_mode)
+            return render.url
+    
+    def create_album(self, track):
+        uri = track['item']['album']['id']
         raw_img_url = track['item']['album']['images'][0]['url']
-        urllib.request.urlretrieve(raw_img_url, "temp.png")
+        album = Album(uri=uri, artist_name="", album_name="", url=raw_img_url)
+        return album
+
+    def get_raw_img(self, url):
+        urllib.request.urlretrieve(url, "temp.png")
         raw_img = Image.open("temp.png")
         if raw_img.mode == "L":  # if grayscale, convert to RGB
             raw_img = raw_img.convert("RGB")
             raw_img.save("temp.png", "PNG")
-        alb = Album(uri=uri,
-                    artist_name="someone", album_name="someone", raw_image="", url="")
-        gcs = GCS()
-        gcs.save_raw_image(raw_img, track['item']['album']['id'])
-        alb.save()
-        return alb
+        return raw_img
 
-    def get_render_url(self, track, render_mode):
-        uri = track['item']['album']['id']
-        if len(Album.objects.filter(uri=uri)) != 0:
-            alb = Album.objects.get(uri=uri)
-            if len(alb.render_set.filter(render_mode=render_mode)) != 0:
-                render = alb.render_set.get(render_mode=render_mode)
-                return render.url
+    def create_render(self, album, render_mode):
+        raw_img = self.get_raw_img(album.url)
+        uri = album.uri
 
-    def get_render_path(self, track, render_mode):
-        alb = self.get_raw_album(track)
-        render_url = os.environ['GCS_MEDIA_URL'] + render_mode + "/" + \
-            track['item']['album']['id'] + '.png'
-        if len(alb.render_set.filter(render_mode=render_mode)) != 0:
-            return render_url
-        
-        raw_img = Image.open(alb.raw_image)
         rendered_img = None
         if render_mode == "mirror-side":
             rendered_img = render_image_mirror_side(raw_img, False)
@@ -170,11 +170,9 @@ class Visualizer:
         else:
             rendered_img = render_image_center(raw_img)
         
-        render_path = settings.MEDIA_ROOT + "/" + render_mode + "/" + \
-            track['item']['album']['id'] + ".png"
-
-        ren = Render(album=alb, render_mode=render_mode, image=render_path, url=render_url)
-        ren.save()
         gcs = GCS()
-        gcs_url = gcs.save_rendered_image(rendered_img, track['item']['album']['id'], render_mode)
-        return gcs_url
+        gcs_url = gcs.save_rendered_image(rendered_img, uri, render_mode)
+
+        ren = Render(album=album, render_mode=render_mode, url=gcs_url)
+        ren.save()
+        return ren
