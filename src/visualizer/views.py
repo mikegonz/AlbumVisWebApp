@@ -7,7 +7,7 @@ import uuid
 
 def index(request):
     if not request.session.get('uuid'):
-        request.session['uuid'***REMOVED*** = str(uuid.uuid4())
+        request.session['uuid'] = str(uuid.uuid4())
 
     auth_manager = SpotifyOAuth(
         scope='user-read-currently-playing',
@@ -15,7 +15,7 @@ def index(request):
     if request.method == 'GET':
         if request.GET.get("code"):
             # Step 3. Being redirected from Spotify auth page
-            request.session['token'***REMOVED*** = auth_manager.get_access_token(
+            request.session['token'] = auth_manager.get_access_token(
                 code=request.GET.get("code"), check_cache=False)
             return redirect(index)
 
@@ -24,11 +24,11 @@ def index(request):
         return HttpResponse(f'<h2><a href="{auth_url}">Sign in</a></h2>')
 
     if is_token_expired(request.session.get('token')):
-        request.session['token'***REMOVED*** = auth_manager.refresh_access_token(
-            request.session.get('token')['refresh_token'***REMOVED***)
+        request.session['token'] = auth_manager.refresh_access_token(
+            request.session.get('token')['refresh_token'])
 
-    spotify = Spotify(request.session.get('token')['access_token'***REMOVED***)
-    request.session['username'***REMOVED*** = spotify.me()['id'***REMOVED***
+    spotify = Spotify(request.session.get('token')['access_token'])
+    request.session['username'] = spotify.me()['id']
     return redirect(visview, request.session.get('username'))
 
 
@@ -36,7 +36,7 @@ def visview(request, username):
     if not request.session.get('username'):
         return redirect(index)
     if username != request.session.get('username'):
-        return redirect(visview, request.session['username'***REMOVED***)
+        return redirect(visview, request.session['username'])
     auth_manager = SpotifyOAuth(scope='user-read-currently-playing')
     if (not request.session.get('token')) or auth_manager.is_token_expired(request.session.get('token')):
         return redirect(index)

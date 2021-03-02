@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-    ***REMOVED***
+    ]
 
     operations = [
         migrations.CreateModel(
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('album_name', models.CharField(max_length=100)),
                 ('raw_image', models.ImageField(upload_to='raw')),
                 ('url', models.CharField(max_length=100)),
-            ***REMOVED***,
+            ],
         ),
         migrations.CreateModel(
             name='Render',
@@ -31,6 +31,6 @@ class Migration(migrations.Migration):
                 ('image', models.ImageField(upload_to='rendered')),
                 ('url', models.CharField(max_length=100)),
                 ('album', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.album')),
-            ***REMOVED***,
+            ],
         ),
-    ***REMOVED***
+    ]

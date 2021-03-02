@@ -16,10 +16,10 @@ def index(request):
 
 
 def get_track(request, username, isFirst):
-    spotify = Spotify(request.session.get('token')['access_token'***REMOVED***)
+    spotify = Spotify(request.session.get('token')['access_token'])
     vis = Visualizer(username, spotify)
     track = vis.currently_playing_track() if isFirst else vis.wait_for_next_track()
-    if track is None or track['item'***REMOVED*** is None:
+    if track is None or track['item'] is None:
         return JsonResponse({
             'error': 'no track currently playing',
             'path': settings.STATIC_URL + "uhoh.jpg"})

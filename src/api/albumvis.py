@@ -5,7 +5,7 @@ import urllib
 from PIL import Image, ImageFilter
 from math import floor, ceil
 import operator
-***REMOVED***
+import os
 
 from django.conf import settings
 from .models import Album, Render
@@ -86,14 +86,14 @@ def render_image_solid(im):
     height = floor(HEIGHT / MULT)
 
     avgcol = (0, 0, 0)
-    for i in [0,15***REMOVED***:
+    for i in [0,15]:
         y = i * im.height/16 + (im.height/32)
         for j in range(16):
             x = j * im.width/16 + (im.width/32)
             avgcol = tuple(map(operator.add, avgcol, im.getpixel((x,y))))
-    for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14***REMOVED***:
+    for i in [1,2,3,4,5,6,7,8,9,10,11,12,13,14]:
         y = i * im.height/16 + (im.height/32)
-        for j in [0,15***REMOVED***:
+        for j in [0,15]:
             x = j * im.width/16 + (im.width/32)
             avgcol = tuple(map(operator.add, avgcol, im.getpixel((x,y))))
             
@@ -121,36 +121,41 @@ class Visualizer:
             if track is None:
                 if newtrack is not None:
                     return newtrack
-            ***REMOVED***
+            else:
                 if newtrack is not None:
-                    if track['item'***REMOVED*** != newtrack['item'***REMOVED***: #TODO: (new)track['item'***REMOVED*** itself can be None!!!!
+                    if track['item'] != newtrack['item']: #TODO: (new)track['item'] itself can be None!!!!
                         return newtrack
 
     def get_raw_album(self, track):
-        raw_url = os.environ['MEDIA_URL'***REMOVED*** + "raw/" + \
-            track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED*** + '.jpg'
-        if len(Album.objects.filter(uri=track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED***)) != 0:
-            return Album.objects.get(uri=track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED***)
+        uri = track['item']['album']['id']
+        if len(Album.objects.filter(uri=uri)) != 0:
+            return Album.objects.get(uri=uri)
 
-        raw_path = settings.MEDIA_ROOT + "/raw/" + \
-            track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED*** + '.jpg'
-        raw_img_url = track['item'***REMOVED***['album'***REMOVED***['images'***REMOVED***[0***REMOVED***['url'***REMOVED***
+        raw_img_url = track['item']['album']['images'][0]['url']
         urllib.request.urlretrieve(raw_img_url, "temp.png")
         raw_img = Image.open("temp.png")
         if raw_img.mode == "L":  # if grayscale, convert to RGB
             raw_img = raw_img.convert("RGB")
             raw_img.save("temp.png", "PNG")
-        alb = Album(uri=track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED***,
-                    artist_name="someone", album_name="someone", raw_image=raw_path, url=raw_url)
+        alb = Album(uri=uri,
+                    artist_name="someone", album_name="someone", raw_image="", url="")
         gcs = GCS()
-        gcs.save_raw_image(raw_img, track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED***)
+        gcs.save_raw_image(raw_img, track['item']['album']['id'])
         alb.save()
         return alb
 
+    def get_render_url(self, track, render_mode):
+        uri = track['item']['album']['id']
+        if len(Album.objects.filter(uri=uri)) != 0:
+            alb = Album.objects.get(uri=uri)
+            if len(alb.render_set.filter(render_mode=render_mode)) != 0:
+                render = alb.render_set.get(render_mode=render_mode)
+                return render.url
+
     def get_render_path(self, track, render_mode):
         alb = self.get_raw_album(track)
-        render_url = os.environ['GCS_MEDIA_URL'***REMOVED*** + render_mode + "/" + \
-            track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED*** + '.png'
+        render_url = os.environ['GCS_MEDIA_URL'] + render_mode + "/" + \
+            track['item']['album']['id'] + '.png'
         if len(alb.render_set.filter(render_mode=render_mode)) != 0:
             return render_url
         
@@ -162,14 +167,14 @@ class Visualizer:
             rendered_img = render_image_mirror_side(raw_img, True)
         elif render_mode == "solid":
             rendered_img = render_image_solid(raw_img)
-        ***REMOVED***
+        else:
             rendered_img = render_image_center(raw_img)
         
         render_path = settings.MEDIA_ROOT + "/" + render_mode + "/" + \
-            track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED*** + ".png"
+            track['item']['album']['id'] + ".png"
 
         ren = Render(album=alb, render_mode=render_mode, image=render_path, url=render_url)
         ren.save()
         gcs = GCS()
-        gcs_url = gcs.save_rendered_image(rendered_img, track['item'***REMOVED***['album'***REMOVED***['id'***REMOVED***, render_mode)
+        gcs_url = gcs.save_rendered_image(rendered_img, track['item']['album']['id'], render_mode)
         return gcs_url
