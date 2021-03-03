@@ -1,11 +1,11 @@
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 from time import sleep
-import urllib
 from PIL import Image, ImageFilter
 from math import floor, ceil
 import operator
 import os
+import requests
 
 from django.conf import settings
 from .models import Album, Render
@@ -146,14 +146,13 @@ class Visualizer:
         uri = track['item']['album']['id']
         raw_img_url = track['item']['album']['images'][0]['url']
         album = Album(uri=uri, artist_name="", album_name="", url=raw_img_url)
+        album.save()
         return album
 
     def get_raw_img(self, url):
-        urllib.request.urlretrieve(url, "temp.png")
-        raw_img = Image.open("temp.png")
+        raw_img = Image.open(requests.get(url, stream=True).raw)
         if raw_img.mode == "L":  # if grayscale, convert to RGB
             raw_img = raw_img.convert("RGB")
-            raw_img.save("temp.png", "PNG")
         return raw_img
 
     def create_render(self, album, render_mode):

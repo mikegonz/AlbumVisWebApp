@@ -1,6 +1,7 @@
 from google.cloud import storage
 import os
 from PIL import Image
+from io import BytesIO
 
 
 class GCS:
@@ -9,18 +10,10 @@ class GCS:
         self.bucket = self.storage_client.get_bucket(
             os.environ['GCS_BUCKET_NAME'])
 
-    def save_raw_image(self, img, album_id):
-        print("saving raw image")
-        blob = storage.Blob("raw/%s.png" % album_id, self.bucket)
-        img.save("temp.png", "PNG")
-        with open("temp.png", "rb") as f:
-            blob.upload_from_file(f, content_type="image/png")
-        return os.environ['GCS_MEDIA_URL'] + "raw/" + album_id + ".png"
-
     def save_rendered_image(self, img, album_id, render_mode):
         print("saving rendered image")
         blob = storage.Blob("%s/%s.png" % (render_mode, album_id), self.bucket)
-        img.save("temp.png", "PNG")
-        with open("temp.png", "rb") as f:
-            blob.upload_from_file(f, content_type="image/png")
+        temp = BytesIO()
+        img.save(temp, "PNG")
+        blob.upload_from_string(temp.getvalue(), content_type="image/png")
         return os.environ['GCS_MEDIA_URL'] + render_mode + "/" + album_id + ".png"
