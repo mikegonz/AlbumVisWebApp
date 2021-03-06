@@ -21,7 +21,8 @@ def index(request):
 
     if not request.session.get('token'):
         auth_url = auth_manager.get_authorize_url()
-        return HttpResponse(f'<h2><a href="{auth_url}">Sign in</a></h2>')
+        context = {'auth_url': auth_url}
+        return render(request, "visualizer/index.html", context)
 
     if is_token_expired(request.session.get('token')):
         request.session['token'] = auth_manager.refresh_access_token(
@@ -29,7 +30,8 @@ def index(request):
 
     spotify = Spotify(request.session.get('token')['access_token'])
     request.session['username'] = spotify.me()['id']
-    return redirect(visview, request.session.get('username'))
+    context = {'username': request.session.get('username')}
+    return render(request, "visualizer/index.html", context)
 
 
 def visview(request, username):

@@ -6,10 +6,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>AlbumVis - Spotify Album Visualizer</title>
+    <link rel="stylesheet" href="{% static 'visualizer/index.css' %}" />
   </head>
   <body>
     <h1>AlbumVis - Spotify Album Visualizer</h1>
-    <h4>enter username to start:</h4>
-    <input \ />
+    <h2>visualizer settings:</h2>
+    <h3>display mode</h3>
+    <li>
+      <label for="mirror-side">
+        <input id="mirror-side" type="radio" name="display-mode" />
+        mirror-side
+      </label>
+    </li>
+
+    <li>
+      <label for="mirror-side-blur">
+        <input id="mirror-side-blur" type="radio" name="display-mode" />
+        mirror-side-blur
+      </label>
+    </li>
+
+    <li>
+      <label for="center">
+        <input id="center" type="radio" name="display-mode" />
+        center
+      </label>
+    </li>
+
+    <li>
+      <label for="solid">
+        <input id="solid" type="radio" name="display-mode" />
+        solid
+      </label>
+    </li>
+    <h3>show artist & track name?</h3>
+    <li>
+      <label for="names-yes">
+        <input id="names-yes" type="radio" name="display-names" />
+        yes
+      </label>
+    </li>
+    <li>
+      <label for="names-no">
+        <input id="names-no" type="radio" name="display-names" />
+        no
+      </label>
+    </li>
+    {% if auth_url %}
+    <h2><a href="{{ auth_url }}">sign in</a></h2>
+    {% endif %} {% if username %}
+    <h2>
+      <a href="/{{ username }}">start visualization for {{ username }}</a>
+      <span style="padding-right:50px"></span>
+      <a href="/">sign out</a>
+    </h2>
+    <h2></h2>
+    {% endif %}
   </body>
 </html>
