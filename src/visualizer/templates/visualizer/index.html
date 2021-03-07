@@ -1,66 +1,74 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>AlbumVis - Spotify Album Visualizer</title>
-    <link rel="stylesheet" href="{% static 'visualizer/index.css' %}" />
-  </head>
-  <body>
-    <h1>AlbumVis - Spotify Album Visualizer</h1>
-    <h2>visualizer settings:</h2>
-    <h3>display mode</h3>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>AlbumVis - Spotify Album Visualizer</title>
+  <link rel="stylesheet" href="{% static 'visualizer/index.css' %}" />
+</head>
+
+<body>
+  <h1>AlbumVis - Spotify Album Visualizer</h1>
+  <h2>visualizer settings:</h2>
+  <h3>display mode</h3>
+  <form action="/update_settings/" method="post">
+    {% csrf_token %}
     <li>
       <label for="mirror-side">
-        <input id="mirror-side" type="radio" name="display-mode" />
-        mirror-side
+        <input id="mirror-side" type="radio" name="display-mode" value="mirror-side"
+          {% if display_mode == 'mirror-side' %} checked="checked" {% endif %} /> mirror-side
       </label>
     </li>
 
     <li>
       <label for="mirror-side-blur">
-        <input id="mirror-side-blur" type="radio" name="display-mode" />
-        mirror-side-blur
+        <input id="mirror-side-blur" type="radio" name="display-mode" value="mirror-side-blur"
+          {% if display_mode == "mirror-side-blur" %} checked="checked" {% endif %} /> mirror-side-blur
       </label>
     </li>
 
     <li>
       <label for="center">
-        <input id="center" type="radio" name="display-mode" />
-        center
+        <input id="center" type="radio" name="display-mode" value="center" {%if display_mode == "center" %}
+          checked="checked" {% endif %} /> center
       </label>
     </li>
 
     <li>
       <label for="solid">
-        <input id="solid" type="radio" name="display-mode" />
-        solid
+        <input id="solid" type="radio" name="display-mode" value="solid" {%if display_mode == 'solid' %}
+          checked="checked" {% endif %} /> solid
       </label>
     </li>
     <h3>show artist & track name?</h3>
-    <li>
+    <!-- <li>
+      <input id="names-yes" type="radio" name="display-names" value="yes" {%if display_names == True %}
+        checked="checked" {%endif %} />
       <label for="names-yes">
-        <input id="names-yes" type="radio" name="display-names" />
         yes
       </label>
-    </li>
+    </li> -->
     <li>
       <label for="names-no">
-        <input id="names-no" type="radio" name="display-names" />
+        <input id="names-no" type="radio" name="display-names" checked="checked" value="no"
+          {%if display_names == False %} checked="checked" {%endif %} />
         no
       </label>
     </li>
-    {% if auth_url %}
-    <h2><a href="{{ auth_url }}">sign in</a></h2>
-    {% endif %} {% if username %}
-    <h2>
-      <a href="/{{ username }}">start visualization for {{ username }}</a>
-      <span style="padding-right:50px"></span>
-      <a href="/">sign out</a>
-    </h2>
-    <h2></h2>
-    {% endif %}
-  </body>
+    <input type="submit" value="update" />
+  </form>
+  {% if auth_url %}
+  <h2><a href="{{ auth_url }}">sign in</a></h2>
+  {% endif %} {% if username %}
+  <h2>
+    <a href="/{{ username }}">start visualization for {{ username }}</a>
+    <span style="padding-right:50px"></span>
+    <a href="/signout">sign out</a>
+  </h2>
+  {% endif %}
+</body>
+
 </html>

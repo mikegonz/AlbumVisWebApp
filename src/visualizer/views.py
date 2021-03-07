@@ -30,8 +30,18 @@ def index(request):
 
     spotify = Spotify(request.session.get('token')['access_token'])
     request.session['username'] = spotify.me()['id']
-    context = {'username': request.session.get('username')}
+    if (not 'display-mode' in request.session.keys()):
+        request.session['display-mode'] = 'mirror-side'
+    if (not 'display-names' in request.session.keys()):
+        request.session['display-names'] = 'no'
+    context = {'username': request.session.get('username'), 'display_mode': request.session.get(
+        'display-mode'), 'display_names': request.session.get('display-names')}
     return render(request, "visualizer/index.html", context)
+
+
+def signout(request):
+    request.session.flush()
+    return redirect(index)
 
 
 def visview(request, username):
@@ -44,3 +54,9 @@ def visview(request, username):
         return redirect(index)
     context = {'username': username, 'sessionid': request.session.get('uuid')}
     return render(request, "visualizer/vis.html", context)
+
+
+def update_settings(request):
+    request.session['display-mode'] = request.POST['display-mode']
+    request.session['display-names'] = True if request.POST['display-names'] == 'yes' else False
+    return redirect(index)
