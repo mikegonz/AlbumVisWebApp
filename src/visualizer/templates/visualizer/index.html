@@ -43,14 +43,15 @@
           checked="checked" {% endif %} /> solid
       </label>
     </li>
+    <!--
     <h3>show artist & track name?</h3>
-    <!-- <li>
+     <li>
       <input id="names-yes" type="radio" name="display-names" value="yes" {%if display_names == True %}
         checked="checked" {%endif %} />
       <label for="names-yes">
         yes
       </label>
-    </li> -->
+    </li> 
     <li>
       <label for="names-no">
         <input id="names-no" type="radio" name="display-names" checked="checked" value="no"
@@ -58,6 +59,7 @@
         no
       </label>
     </li>
+    -->
     <input type="submit" value="update" />
   </form>
   {% if auth_url %}

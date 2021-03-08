@@ -1,13 +1,15 @@
 function startPolling(username) {
-  $.get("/api/playing/" + username, function(data, status) {
+  $.get("/api/playing/" + username, function (data, status) {
     document.getElementById("vis").src = data.path;
     poll(username);
   });
 }
 
 function poll(username) {
-  $.get("/api/playingnext/" + username, function(data, status) {
-    document.getElementById("vis").src = data.path;
+  $.get("/api/playingnext/" + username, function (data, status) {
+    if (data.err != "503") {
+      document.getElementById("vis").src = data.path;
+    }
     poll(username);
   });
 }

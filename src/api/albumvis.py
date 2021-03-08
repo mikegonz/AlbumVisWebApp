@@ -109,22 +109,25 @@ class Visualizer:
 
     def currently_playing_track(self):
         track = self.sp.current_user_playing_track()
-        return track
+        return None, track
 
     # TODO: it shouldn't return if track is different but from same album
 
     def wait_for_next_track(self):
         track = self.sp.current_user_playing_track()
-        while(True):
+        sleeptime = 0
+        while(sleeptime < 180):
+            sleeptime += 3
             sleep(3)
             newtrack = self.sp.current_user_playing_track()
             if track is None:
                 if newtrack is not None:
-                    return newtrack
+                    return None, newtrack
             else:
                 if newtrack is not None:
                     if track['item'] != newtrack['item']: #TODO: (new)track['item'] itself can be None!!!!
-                        return newtrack
+                        return None, newtrack
+        return "503", None
 
     def get_render_url(self, track, render_mode):
         uri = track['item']['album']['id']
